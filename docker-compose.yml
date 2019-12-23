@@ -24,7 +24,7 @@ services:
       - --listen=:8000
       - --redirection-url=http://gosaml.lvh.me:8000
       - --encryption-key=AgXa7xRcoClDEUKKDSH4X0XhL5Qy3Z2j
-      - --upstream-url=http://gosaml:8002
+      - --upstream-url=http://nginx:8080
       - --enable-default-deny=true
       - --skip-upstream-tls-verify
       - --secure-cookie=false
@@ -32,18 +32,36 @@ services:
       - --enable-https-redirection=false
       - --verbose
     depends_on:
-      - test-gosaml
+      - test-oidc
     external_links:
-      - oidc:oidc.lvh.me      
+      - oidc:oidc.lvh.me
+  test-nginx:
+    container_name: nginx
+    build: ./nginx
+    ports:
+     - "8081:8080"
+    links: 
+    - test-goapi
+    - test-gosaml
+    image: gjuljo/nginxsaml:v3
+    depends_on:
+      - test-goapi
+      - test-gosaml      
   test-gosaml:
     container_name: gosaml
     build: ./gosaml
     ports:
      - "8002:8002"
-    image: gjuljo/gosaml:v2
+    image: gjuljo/gosaml:v3
     environment: 
       - IDP_URL=http://oidc.lvh.me:8080/auth/realms/demo/protocol/saml/descriptor
       - REDIRECT_URL=http://gosaml.lvh.me:8000
       - PORT=8002
     external_links:
       - oidc:oidc.lvh.me
+  test-goapi:
+    container_name: goapi
+    build: ./goapi
+    ports:
+     - "8001:8001"
+    image: gjuljo/goapi:v3

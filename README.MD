@@ -68,3 +68,16 @@ docker-compose up -d
 The following sequence diagram shows the interation between the three involved components:
 
 !["2-OIDC"](docs/SingleSignOnExample-Sequence-2.png)
+
+
+## 3-NGINX
+In the third stage we introduct two additional components:
+- **goapi** that implements the revert API by actually reverting the word order of the sentence writte in the input field of the webpage
+- **nginx** that routes any call to the revert API to the goapi component instead of the gosaml
+
+The API call will actually include the OIDC Bearer token but no actual authentication check is done in goapi. For this reason in the next stage we'll introduce the **Kong** API Gateway to enforce the authentication, assuming goapi is not directly protected by the gatek reverse proxy.
+
+The following sequence diagram shows the interaction between all the involved components at this stage:
+
+!["3-OIDC"](docs/SingleSignOnExample-Sequence-3.png)
+
