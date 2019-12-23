@@ -56,3 +56,15 @@ In further stages of this solution, this back-end API will be replaced with a di
 
 !["1-SAMLONLY"](docs/SingleSignOnExample-Sequence-1.png)
 
+## 2-OIDC
+In this second stage we introduce Keycloak Gatekeeper as security proxy, to inforce the OIDC authentication before calling the SAML application. Behind the scene a double authentication in in place, involving a single sign-on scenario, even if the user won't notice it as only one login is requested.
+
+Stop the further solution, if needed, then start this new one once test-oidc is running again:
+
+```
+docker-compose up -d
+```
+
+The following sequence diagram shows the interation between the three involved components:
+
+!["2-OIDC"](docs/SingleSignOnExample-Sequence-2.png)

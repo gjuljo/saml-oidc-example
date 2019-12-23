@@ -12,12 +12,35 @@ services:
     ports:
      - "8080:8080"
     image: jboss/keycloak:7.0.1
+  test-gatek:
+    container_name: gatek
+    ports:
+     - "8000:8000"
+    image: keycloak/keycloak-gatekeeper
+    command:
+      - --discovery-url=http://oidc.lvh.me:8080/auth/realms/demo
+      - --client-id=testclient
+      - --client-secret=819f244c-4aec-4be6-9db0-cd23944b962a
+      - --listen=:8000
+      - --redirection-url=http://gosaml.lvh.me:8000
+      - --encryption-key=AgXa7xRcoClDEUKKDSH4X0XhL5Qy3Z2j
+      - --upstream-url=http://gosaml:8002
+      - --enable-default-deny=true
+      - --skip-upstream-tls-verify
+      - --secure-cookie=false
+      - --skip-openid-provider-tls-verify
+      - --enable-https-redirection=false
+      - --verbose
+    depends_on:
+      - test-gosaml
+    external_links:
+      - oidc:oidc.lvh.me      
   test-gosaml:
     container_name: gosaml
     build: ./gosaml
     ports:
-     - "8000:8002"
-    image: gjuljo/gosaml:v1
+     - "8002:8002"
+    image: gjuljo/gosaml:v2
     environment: 
       - IDP_URL=http://oidc.lvh.me:8080/auth/realms/demo/protocol/saml/descriptor
       - REDIRECT_URL=http://gosaml.lvh.me:8000

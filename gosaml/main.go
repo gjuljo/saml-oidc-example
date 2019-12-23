@@ -65,6 +65,17 @@ func revert(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func init() {
+
+	cfg := &tls.Config{
+		InsecureSkipVerify: true,
+	}
+
+	http.DefaultClient.Transport = &http.Transport{
+		TLSClientConfig: cfg,
+	}
+}
+
 func main() {
 	log.Print("GOSAML TEST, version ", VERSION, " (", BUILDDATE, ")")
 
