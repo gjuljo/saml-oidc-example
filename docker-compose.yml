@@ -14,9 +14,10 @@ services:
     image: jboss/keycloak:7.0.1
   test-gatek:
     container_name: gatek
+    build: ./kgate
     ports:
      - "8000:8000"
-    image: keycloak/keycloak-gatekeeper
+    image: gjuljo/gatekeeper:v5
     command:
       - --discovery-url=http://oidc.lvh.me:8080/auth/realms/demo
       - --client-id=testclient
@@ -30,6 +31,9 @@ services:
       - --secure-cookie=false
       - --skip-openid-provider-tls-verify
       - --enable-https-redirection=false
+      - --enable-refresh-tokens=true
+      - --store-url=boltdb:////tmp/bolt
+      - --cookie-domain=gosaml.lvh.me      
       - --verbose
     depends_on:
       - test-oidc
@@ -43,7 +47,7 @@ services:
     links: 
     - test-apigw
     - test-gosaml
-    image: gjuljo/nginxsaml:v4
+    image: gjuljo/nginxsaml:v5
     depends_on:
       - test-goapi
       - test-gosaml      
@@ -52,7 +56,7 @@ services:
     build: ./gosaml
     ports:
      - "8002:8002"
-    image: gjuljo/gosaml:v4
+    image: gjuljo/gosaml:v5
     environment: 
       - IDP_URL=http://oidc.lvh.me:8080/auth/realms/demo/protocol/saml/descriptor
       - REDIRECT_URL=http://gosaml.lvh.me:8000
@@ -86,4 +90,4 @@ services:
     build: ./goapi
     ports:
      - "8001:8001"
-    image: gjuljo/goapi:v4
+    image: gjuljo/goapi:v5

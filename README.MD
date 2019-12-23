@@ -49,6 +49,20 @@ oidc | 08:29:17,536 INFO  [org.jboss.as] (Controller Boot Thread) WFLYSRV0025: K
 
 You can also open the Keycloak Admin console at the link [http://localhost:8080/auth/](http://localhost:8080/auth/)
 
+## STOP EVERYTHING BUT OIDC
+With Docker Compose you can stop and remove one or more containers at once, using the following command:
+
+```console
+docker-compose rm -f -s test-gatek test-nginx test-apigw test-gosaml test-goapi
+```
+
+This is especially useful whenever you want to make a change on any of them without restarting the Keycloak server.
+Instead, if you want to stop everything, use the following command:
+
+```console
+docker-compose down
+```
+
 ## USERS AND PASSWORDS
 The following users are defined in the Keycloak server:
 - admin/password
