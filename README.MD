@@ -4,10 +4,23 @@
 The aim of this prototype is to show how both SAML and OIDC authentication mechanisms can coexist in the same solution, whether SAML is used to authenticate the access to a web application (i.e. gosaml) while OIDC is used to authenticate an API call to another application (i.e. goapi).
 Both authentication mechanisms are implemented using [Keycloak](https://www.keycloak.org/), but this solution includes more components such as [Nginx](https://www.nginx.com/) for path-based routing, [Keycloak Gatekeeper](https://github.com/keycloak/keycloak-gatekeeper) as OIDC reverse-proxy and [Kong](https://konghq.com/) as API Gateway.
 To better explain the role that each component plains in this example solution, we'll adopt a step-by-step approach, by introducing each element one by one.  
+The following pictures shows these components and how they are connected together:
+
+!["TECHNOLOGY VIEW"](docs/SingleSignOnExample-TechnologyView.png)
 
 ## DEPENDENCIES
 This example is based on a single Docker Compose file that includes all the services involved at each stage of the implementation. 
-Use `git checkout` to switch from one stage to another, accordingly to each corresponding tag.
+Use `git checkout` to switch from one stage to another, accordingly to each corresponding tag:
+- 1-samlonly
+- 2-oidc
+- 3-nginx
+- 4-kong
+
+The following pictures shows how the container are instantiated in the final **docker-compose.yml** file and how their ports are mapped.
+The browser interacts with ports 8000 and 8080, but the other ports can be used for test purposes.
+
+!["TECHNOLOGY VIEW"](docs/SingleSignOnExample-Docker-Compose.png)
+
 
 ### **DISCLAIMER**
 **Please be aware that this solution is implemented for test and education purposes only and it should not be uses ad-is in production environments. In particular, to simplify the setup, secrets and passwords are stored in the configuration files, without any specific protections that are a 'must-have' requirement for production environments.**
@@ -81,3 +94,11 @@ The following sequence diagram shows the interaction between all the involved co
 
 !["3-OIDC"](docs/SingleSignOnExample-Sequence-3.png)
 
+
+## 4-KONG
+This is the final stage, where also Kong API Gateway is introduced to protect the access to the goapi application, by verifying the OIDC Bearer token that the gatek reverse proxy introduces in the **Authorization** HTTP header.
+Since the basic **jwt** Kong plugin is used, we have to declare Keycloak's public key in the **kong.yml** file.
+
+The following sequence diagram shows the interaction of all the components of this solution:
+
+!["4-KONG"](docs/SingleSignOnExample-Sequence-4.png)

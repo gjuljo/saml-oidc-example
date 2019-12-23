@@ -1,0 +1,34 @@
+_format_version: "1.1"
+
+
+services:
+- name: goapi-service
+  url: http://goapi:8001
+  # Entities can store tags as metadata
+  routes:
+  - name: goapi-route
+    paths:
+    - /
+  plugins:
+  - name: jwt
+    config:
+      key_claim_name: iss
+      secret_is_base64: false
+
+consumers:
+- username: testclient
+
+jwt_secrets:
+- consumer: testclient
+  key: http://oidc.lvh.me:8080/auth/realms/demo
+  algorithm: RS256
+  rsa_public_key: |
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoTvC3/4JTkF0ceTvzwFA
+    P+utm07sqtYgCEvyCr+FJOFOThWdHFQA9UGCvZLby465xP+20+x/W7qWp5nmi2eV
+    9JptSH63BmYkuqKzPV6r7qcPE7ILoACv0hQF9/wR4CqIhKjMYBN3yI63WNtP7d7X
+    ZgEF/aYe2koz8buLgYiJi+eDNKdvRuOf4jo1txK8YU3Thv42CSfld/SnsYLJKhZd
+    8HLJotZjSrRjWPVd4As8I3FLlscutvR7tGfALDgR5VB5CqBAKrCDLGd5eZK17p4e
+    gwtVnbcAhYUJDWj/5Qu2+sjM77TIFEQE6+ZKzc3oAdlGKFDTtGM9DYwEf4JbCP2u
+    DwIDAQAB
+    -----END PUBLIC KEY-----
