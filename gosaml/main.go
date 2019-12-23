@@ -22,7 +22,7 @@ func getEnv(key, fallback string) string {
 }
 
 func revertString(txt string) string {
-	return txt
+	return "this is the default implementation"
 }
 
 type reverseRequest struct {

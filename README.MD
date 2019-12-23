@@ -38,7 +38,7 @@ You can also open the Keycloak Admin console at the link [http://localhost:8080/
 
 ## USERS AND PASSWORDS
 The following users are defined in the Keycloak server:
-- admin/admin
+- admin/password
 - pippo/pippopippo
 - paperino/paperinopaperino
 
@@ -50,8 +50,8 @@ Start the SAML application (gosaml).
 docker-compose up -d test-gosaml
 ```
 
-Once the application is started, open the browser at the link [http://localhost:8000](http://localhost:8080). You'll be redirected to the Keycloak login page as the application requires a SAML-based authentication.
-Provide username and password (pippo/pippopippo) to login and the browser should open a simple web page where you can enter some text. When you press the **OK** button, the web application sends the text to the server that, in this implementation, will just echo it back to the page again.
+Once the application is started, open the browser at the link [http://gosaml.lvh.me:8000/](http://gosaml.lvh.me:8000/). You'll be redirected to the Keycloak login page as the application requires a SAML-based authentication.
+Provide username and password (pippo/pippopippo) to login and the browser should open a simple web page where you can enter some text. When you press the **OK** button, the web application sends the text to the server that, in this implementation, will just reply with the text *this is the default implementation*.
 In further stages of this solution, this back-end API will be replaced with a different implementation that will revert the word order of the text provided in the input field. The Nginx component will route the API call to this second implementation.
 
 !["1-SAMLONLY"](docs/SingleSignOnExample-Sequence-1.png)
