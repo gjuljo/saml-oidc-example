@@ -23,7 +23,7 @@ FROM node:12-slim AS elmbuilder
 
 WORKDIR /gosaml-elm/
 
-RUN apt-get update; \
+RUN apt-get -y update; apt-get -y install ca-certificates; \
    if [ "$http_proxy" -o "$https_proxy" ]; then \
       wget https://github.com/elm/compiler/releases/download/0.19.0/binary-for-linux-64-bit.gz -P /tmp/ ; \
       gunzip /tmp/binary-for-linux-64-bit.gz -c > /usr/local/bin/elm; \
