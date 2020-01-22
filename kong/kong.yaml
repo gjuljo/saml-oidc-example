@@ -20,7 +20,7 @@ consumers:
 
 jwt_secrets:
 - consumer: testclient
-  key: http://oidc.lvh.me:8080/auth/realms/demo
+  key: https://oidc.lvh.me:8443/auth/realms/demo
   algorithm: RS256
   rsa_public_key: |
     -----BEGIN PUBLIC KEY-----

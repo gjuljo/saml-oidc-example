@@ -1,9 +1,16 @@
 version: '3'
 services:
+  test-gencerts:
+    container_name: gencerts
+    build: ./ssl
+    volumes:
+       - ./certs/:/ssl/
+    image: gjuljo/gencerts:v6
   test-oidc:
     container_name: oidc
     volumes:
        - ./kcloak/:/tmp/
+       - ./certs/application.keystore:/opt/jboss/keycloak/standalone/configuration/application.keystore
     environment: 
       - KEYCLOAK_USER=admin
       - KEYCLOAK_PASSWORD=password
@@ -11,39 +18,54 @@ services:
       - DB_VENDOR=h2
     ports:
      - "8080:8080"
+     - "8443:8443"
     image: jboss/keycloak:7.0.1
+    depends_on:
+      - test-gencerts
   test-gatek:
     container_name: gatek
     ports:
      - "8000:8000"
     image: keycloak/keycloak-gatekeeper
     command:
-      - --discovery-url=http://oidc.lvh.me:8080/auth/realms/demo
+      - --discovery-url=https://oidc.lvh.me:8443/auth/realms/demo
       - --client-id=testclient
       - --client-secret=819f244c-4aec-4be6-9db0-cd23944b962a
       - --listen=:8000
-      - --redirection-url=http://gosaml.lvh.me:8000
+      - --redirection-url=https://gosaml.lvh.me:8000
       - --encryption-key=AgXa7xRcoClDEUKKDSH4X0XhL5Qy3Z2j
-      - --upstream-url=http://nginx:8080
+      - --upstream-url=https://nginx:8443
       - --enable-default-deny=true
-      - --skip-upstream-tls-verify
-      - --secure-cookie=false
-      - --skip-openid-provider-tls-verify
-      - --enable-https-redirection=false
+      - --skip-upstream-tls-verify=false
+      - --upstream-ca=/mycerts/myca.crt
+      - --secure-cookie=true
+      - --skip-openid-provider-tls-verify=false
+      - --enable-https-redirection=true
+      - --enable-security-filter=true
+      - --force-encrypted-cookie=true
+      - --tls-cert=/mycerts/gatek.crt
+      - --tls-private-key=/mycerts/gatek.key      
       - --verbose
+    volumes:
+      - ./certs/:/mycerts/
+      - ./certs/myca.crt:/etc/ssl/certs/myca.crt
     depends_on:
       - test-oidc
+      - test-gencerts
     external_links:
       - oidc:oidc.lvh.me
   test-nginx:
     container_name: nginx
     build: ./nginx
     ports:
-     - "8081:8080"
+     - "8081:8443"
+    volumes:
+    - ./certs/nginx.crt:/etc/ssl/certs/nginx.crt
+    - ./certs/nginx.key:/etc/ssl/certs/nginx.key    
     links: 
     - test-apigw
     - test-gosaml
-    image: gjuljo/nginxsaml:v4
+    image: gjuljo/nginxsaml:v6
     depends_on:
       - test-goapi
       - test-gosaml      
@@ -52,10 +74,10 @@ services:
     build: ./gosaml
     ports:
      - "8002:8002"
-    image: gjuljo/gosaml:v4
+    image: gjuljo/gosaml:v6
     environment: 
-      - IDP_URL=http://oidc.lvh.me:8080/auth/realms/demo/protocol/saml/descriptor
-      - REDIRECT_URL=http://gosaml.lvh.me:8000
+      - IDP_URL=https://oidc.lvh.me:8443/auth/realms/demo/protocol/saml/descriptor
+      - REDIRECT_URL=https://gosaml.lvh.me:8000
       - PORT=8002
     external_links:
       - oidc:oidc.lvh.me
@@ -86,4 +108,4 @@ services:
     build: ./goapi
     ports:
      - "8001:8001"
-    image: gjuljo/goapi:v4
+    image: gjuljo/goapi:v6

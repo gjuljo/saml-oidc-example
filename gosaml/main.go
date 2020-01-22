@@ -109,6 +109,8 @@ func main() {
 		Key:            keyPair.PrivateKey.(*rsa.PrivateKey),
 		Certificate:    keyPair.Leaf,
 		IDPMetadataURL: idpMetadataURL,
+		CookieSecure:   true,
+		CookieName:     "samltoken",
 	})
 
 	// hello handler
